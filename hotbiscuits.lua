@@ -25,13 +25,6 @@ _G.timing = {}
 _G.tmp = {}
 _G.ui = {}
 
-_G.core.ui_font = "Tahoma"
-_G.core.version = "0.1-alpha"
-_G.core.vitals = {}
-_G.core.bals = {}
-_G.core.state = "Active"
-_G.core.current_toggle = "Mapper"
-
 _G.timers.sets = {}
 
 _G.tmp.banked_gold ="0"
@@ -65,7 +58,11 @@ function load_modules()
 	package.path = string.format("%s;%s;%s;%s", path, lua_dir, init_dir, sysdir)
 	package.cpath = string.format("%s;%s;%s;%s", cpath, lua_dir, init_dir, sysdir)
 
-	local m = CORE_LOADED and { "affs", "can", "core", "genrun", "GMCP", "pdb", "rc4", "settings", "timing", "ui", "vitals" } or nil
+	local m = CORE_LOADED and { "core", "affs", "can", "genrun", "GMCP", "pdb", "rc4", "settings", "timing", "ui", "vitals" } or nil
+	for _, n in ipairs(m) do
+		_G[n] = nil
+		package.loaded[n] = nil
+	end
 	for _, n in ipairs(m) do
 		local s, c = pcall(require, n)
 		if not s then display(c) e:error("Failed to load module: "..n..".lua. Please contact Taer or Wobou.") end

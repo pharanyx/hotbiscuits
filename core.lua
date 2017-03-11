@@ -3,6 +3,79 @@ module("core", package.seeall)
 
 -- Hot Biscuits core system functions
 
+_G.core.ui_font = "Tahoma"
+_G.core.version = "0.1-alpha"
+_G.core.vitals = {}
+_G.core.bals = {}
+_G.core.state = "Active"
+_G.core.current_toggle = "Mapper"
+
+--Priority queue largely stolen and modified from https://rosettacode.org/wiki/Priority_queue#Lua
+
+priority_queue = {
+    __index = {
+        push = function(self, v, p)
+            local q = self.prios[p]
+            if not q then
+                q = {first = 1, last = 0}
+                self.prios[p] = q
+            end
+            q.last = q.last + 1
+            q[q.last] = v
+			self.counter = self.counter + 1
+        end,
+        pop = function(self)
+            for p, q in pairs(self.prios) do
+                if q.first <= q.last then
+                    local v = q[q.first]
+                    q[q.first] = nil
+                    q.first = q.first + 1
+					self.counter = self.counter - 1
+                    return v, p
+                else
+                    self.prios[p] = nil
+                end
+            end
+		end,
+		isempty = function(self)
+			return self.counter == 0
+		end
+
+    },
+    __call = function(cls)
+        return setmetatable({
+			prios = {},
+			counter = 0
+		}, cls)
+    end
+}
+
+setmetatable(priority_queue, priority_queue)
+
+
+-- Event delegation
+
+command_queue = priority_queue()
+
+--This is just a short cut for command_queue:push that allows us to have a default priority
+function send_prio(command, priority)
+	if priority == nil then
+		priority = 100
+	end
+	echo("Added " .. command .. " with " .. priority)
+	command_queue:push(command, priority)
+end
+
+function prompt()
+	raiseEvent("act") -- The act event informs all other modules
+	-- Our command_queue variable should now have actions in it
+	while not command_queue:isempty() do
+		local command = command_queue:pop()
+		send(command)
+	end
+end
+registerAnonymousEventHandler("prompt_received", "core.prompt")
+
 
 function _G.round(num, idp)
     local mult = 10 ^ (idp or 0)

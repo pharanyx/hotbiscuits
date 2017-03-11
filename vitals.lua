@@ -11,6 +11,9 @@ function cure()
 	beast_heal()
 end
 
+registerAnonymousEventHandler("act", "vitals.cure")
+
+
 
 function sip()	
 	local to_health = core.vitals.maxhp * (tonumber(settings.cures.sip_health) / 100)
@@ -26,7 +29,7 @@ function sip()
 		and core.bals.healing 
 		and not limiters.healing
 	then
-		send("sip health")
+		core.send_prio("sip health")
 		tmp.manaswap = true
 		core:fson("healing")
 
@@ -42,7 +45,7 @@ function sip()
 		and core.bals.healing 
 		and not limiters.healing
 	then
-		send("sip bromides")
+		core.send_prio("sip bromides")
 		tmp.manaswap = true
 		core:fson("healing")
 
@@ -58,7 +61,7 @@ function sip()
 		and core.bals.healing
 		and not limiters.healing
 	then
-		send("sip mana")
+		core.send_prio("sip mana")
 		tmp.manaswap = false
 		core:fson("healing")
 
@@ -85,7 +88,7 @@ function scroll()
 		if core.bals.scroll
 			and not limiters.scroll
 		then
-			send("read healing;recharge healing from cube")
+			core.send_prio("read healing;recharge healing from cube")
 			core:fson("scroll")
 		end
 	end
@@ -108,7 +111,7 @@ function sparkle()
 		if core.bals.sparkleberry
 			and not limiters.sparkleberry
 		then
-			send("eat sparkleberry")
+			core.send_prio("eat sparkleberry")
 			core:fson("sparkleberry")
 			
 			if affs:has("blackout") then 
@@ -137,7 +140,7 @@ function beast_heal()
 		and core.bals.beastbal 
 		and not limiters.beastheal
 	then
-		send("beast order heal health")
+		core.send_prio("beast order heal health")
 		tmp.manaswap = true
 		core:fson("beastheal")
 		if affs:has("blackout") then 
@@ -152,7 +155,7 @@ function beast_heal()
 		and core.bals.beastbal 
 		and not limiters.beastheal
 	then
-		send("beast order heal ego")
+		core.send_prio("beast order heal ego")
 		tmp.manaswap = true
 		core:fson("beastheal")
 		if affs:has("blackout") then 
@@ -167,7 +170,7 @@ function beast_heal()
 		and core.bals.beastbal
 		and not limiters.beastheal
 	then
-		send("beast order heal mana")
+		core.send_prio("beast order heal mana")
 		tmp.manaswap = false
 		core:fson("beastheal")
 		if affs:has("blackout") then 
